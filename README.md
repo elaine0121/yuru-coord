@@ -5,6 +5,11 @@
 画面遷移図はFigmaで作成しています。
 https://www.figma.com/design/S4fcMdeo5QgDb9UaMG6Zd2/ 
 
+## ER図
+
+ER図はdbdiagram.ioで作成しています。
+https://dbdiagram.io/d/6a9692315450bea1beb9e96b
+
 ---
 
 ## 1. サービス概要
