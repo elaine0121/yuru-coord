@@ -59,3 +59,7 @@ gem "devise"
 gem "devise-i18n"
 
 gem "json", "~> 2.9"
+group :production do
+  # PostgreSQL for production (Render)
+  gem "pg"
+end
