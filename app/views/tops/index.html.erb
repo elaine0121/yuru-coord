@@ -1,4 +1,10 @@
 <h1>ゆるコーデ</h1>
 <p>天気とシチュエーションに合わせて、毎日のコーディネートを「ゆるっと」提案してくれるサービスです。</p>
-<p><%= link_to "新規登録", new_user_registration_path, class: "btn btn-primary" %></p>
-<p><%= link_to "ログイン", new_user_session_path, class: "btn btn-secondary" %></p>
+
+<% if user_signed_in? %>
+  <p>こんにちは、<%= current_user.email %> さん</p>
+  <p><%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete }, class: "btn btn-secondary" %></p>
+<% else %>
+  <p><%= link_to "新規登録", new_user_registration_path, class: "btn btn-primary" %></p>
+  <p><%= link_to "ログイン", new_user_session_path, class: "btn btn-secondary" %></p>
+<% end %>
