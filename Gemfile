@@ -63,3 +63,8 @@ group :production do
   # PostgreSQL for production (Render)
   gem "pg"
 end
+gem "rspec-rails", "~> 8.0", groups: %i[development test]
+
+gem "factory_bot_rails", "~> 6.5", group: :test
+
+gem "simplecov", "~> 1.2", group: :test
