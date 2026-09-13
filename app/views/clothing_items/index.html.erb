@@ -1,0 +1,32 @@
+<h1>マイ洋服一覧</h1>
+
+<% if notice %>
+  <p class="notice"><%= notice %></p>
+<% end %>
+
+<% if @clothing_items.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>カテゴリ</th>
+        <th>種類</th>
+        <th>色</th>
+        <th>メモ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @clothing_items.each do |item| %>
+        <tr>
+          <td><%= item.category.name %></td>
+          <td><%= item.kind %></td>
+          <td><%= item.color %></td>
+          <td><%= item.memo %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>まだ洋服が登録されていません。洋服を登録しましょう！</p>
+<% end %>
+
+<%= link_to "洋服を登録する", new_clothing_item_path %>
