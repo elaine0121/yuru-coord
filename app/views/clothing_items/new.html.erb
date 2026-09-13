@@ -1,0 +1,39 @@
+<h1>洋服を登録</h1>
+
+<% if notice %>
+  <p class="notice"><%= notice %></p>
+<% end %>
+
+<%= form_with model: @clothing_item, local: true do |f| %>
+  <% if @clothing_item.errors.any? %>
+    <ul>
+      <% @clothing_item.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div>
+    <%= f.label :category_id, "カテゴリ" %>
+    <%= f.collection_select :category_id, @categories, :id, :name, prompt: "選択してください" %>
+  </div>
+
+  <div>
+    <%= f.label :kind, "種類" %>
+    <%= f.text_field :kind, placeholder: "例: Tシャツ" %>
+  </div>
+
+  <div>
+    <%= f.label :color, "色" %>
+    <%= f.text_field :color %>
+  </div>
+
+  <div>
+    <%= f.label :memo, "メモ" %>
+    <%= f.text_area :memo %>
+  </div>
+
+  <%= f.submit "登録する" %>
+<% end %>
+
+<%= link_to "トップへ戻る", root_path %>

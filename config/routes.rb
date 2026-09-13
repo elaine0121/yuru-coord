@@ -7,4 +7,6 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
   root "tops#index"
+
+  resources :clothing_items, only: %i[new create]
 end
