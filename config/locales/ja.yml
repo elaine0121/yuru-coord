@@ -1,0 +1,16 @@
+ja:
+  activerecord:
+    attributes:
+      clothing_item:
+        category: "カテゴリ"
+        kind: "種類"
+        color: "色"
+        memo: "メモ"
+    errors:
+      models:
+        clothing_item:
+          attributes:
+            category:
+              required: "を選択してください"
+            kind:
+              blank: "を入力してください"
