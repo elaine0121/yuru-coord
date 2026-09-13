@@ -1,6 +1,10 @@
 class ClothingItemsController < ApplicationController
   before_action :authenticate_user!
 
+  def index
+    @clothing_items = current_user.clothing_items.includes(:category).order(:id)
+  end
+
   def new
     @clothing_item = ClothingItem.new
     @categories = Category.order(:sort_order)
@@ -11,7 +15,7 @@ class ClothingItemsController < ApplicationController
     @categories = Category.order(:sort_order)
 
     if @clothing_item.save
-      redirect_to new_clothing_item_path, notice: "洋服を登録しました！"
+      redirect_to clothing_items_path, notice: "洋服を登録しました！"
     else
       render :new, status: :unprocessable_entity
     end
