@@ -14,22 +14,22 @@
   <% end %>
 
   <div>
-    <%= f.label :category_id, "カテゴリ" %>
+    <%= f.label :category_id, "カテゴリ（必須）" %>
     <%= f.collection_select :category_id, @categories, :id, :name, prompt: "選択してください" %>
   </div>
 
   <div>
-    <%= f.label :kind, "種類" %>
+    <%= f.label :kind, "種類（必須）" %>
     <%= f.text_field :kind, placeholder: "例: Tシャツ" %>
   </div>
 
   <div>
-    <%= f.label :color, "色" %>
+    <%= f.label :color, "色（任意）" %>
     <%= f.text_field :color %>
   </div>
 
   <div>
-    <%= f.label :memo, "メモ" %>
+    <%= f.label :memo, "メモ（任意）" %>
     <%= f.text_area :memo %>
   </div>
 
