@@ -8,5 +8,5 @@ Rails.application.routes.draw do
 
   root "tops#index"
 
-  resources :clothing_items, only: %i[index show new create]
+  resources :clothing_items, only: %i[index show new create edit update]
 end
