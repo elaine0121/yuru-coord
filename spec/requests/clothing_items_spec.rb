@@ -71,5 +71,28 @@ RSpec.describe "ClothingItems", type: :request do
       expect(item.user).to eq user
       expect(item.kind).to eq "Tシャツ"
     end
+
+    it "編集ページが表示できる" do
+      item = create(:clothing_item, user: user)
+      get edit_clothing_item_path(item)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("洋服を編集")
+      expect(response.body).to include(item.kind)
+    end
+
+    it "洋服を更新すると詳細へリダイレクトされる" do
+      item = create(:clothing_item, user: user)
+      patch clothing_item_path(item), params: { clothing_item: { kind: "ワンピース", color: "ブルー" } }
+      expect(response).to redirect_to(clothing_item_path(item))
+      item.reload
+      expect(item.kind).to eq "ワンピース"
+      expect(item.color).to eq "ブルー"
+    end
+
+    it "他人の洋服の編集にはアクセスできない" do
+      other_item = create(:clothing_item)
+      get edit_clothing_item_path(other_item)
+      expect(response).to have_http_status(:not_found)
+    end
   end
 end

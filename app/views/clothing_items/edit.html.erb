@@ -1,0 +1,39 @@
+<h1>洋服を編集</h1>
+
+<% if notice %>
+  <p class="notice"><%= notice %></p>
+<% end %>
+
+<%= form_with model: @clothing_item, local: true do |f| %>
+  <% if @clothing_item.errors.any? %>
+    <ul>
+      <% @clothing_item.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div>
+    <%= f.label :category_id, "カテゴリ（必須）" %>
+    <%= f.collection_select :category_id, @categories, :id, :name, prompt: "選択してください" %>
+  </div>
+
+  <div>
+    <%= f.label :kind, "種類（必須）" %>
+    <%= f.text_field :kind, placeholder: "例: Tシャツ" %>
+  </div>
+
+  <div>
+    <%= f.label :color, "色（任意）" %>
+    <%= f.text_field :color %>
+  </div>
+
+  <div>
+    <%= f.label :memo, "メモ（任意）" %>
+    <%= f.text_area :memo %>
+  </div>
+
+  <%= f.submit "更新する" %>
+<% end %>
+
+<%= link_to "戻る", clothing_item_path(@clothing_item) %>

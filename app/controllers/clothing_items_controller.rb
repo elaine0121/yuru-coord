@@ -25,6 +25,22 @@ class ClothingItemsController < ApplicationController
     end
   end
 
+  def edit
+    @clothing_item = current_user.clothing_items.find(params[:id])
+    @categories = Category.order(:sort_order)
+  end
+
+  def update
+    @clothing_item = current_user.clothing_items.find(params[:id])
+    @categories = Category.order(:sort_order)
+
+    if @clothing_item.update(clothing_item_params)
+      redirect_to clothing_item_path(@clothing_item), notice: "洋服を更新しました！"
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def clothing_item_params
