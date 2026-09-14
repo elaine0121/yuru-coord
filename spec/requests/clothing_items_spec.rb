@@ -14,6 +14,12 @@ RSpec.describe "ClothingItems", type: :request do
       expect(response).to redirect_to(new_user_session_path)
     end
 
+    it "showへアクセスするとログイン画面へリダイレクトされる" do
+      item = create(:clothing_item)
+      get clothing_item_path(item)
+      expect(response).to redirect_to(new_user_session_path)
+    end
+
     it "newへアクセスするとログイン画面へリダイレクトされる" do
       get new_clothing_item_path
       expect(response).to redirect_to(new_user_session_path)
@@ -29,6 +35,20 @@ RSpec.describe "ClothingItems", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(item.kind)
       expect(response.body).to include(item.category.name)
+    end
+
+    it "詳細ページが表示できる" do
+      item = create(:clothing_item, user: user)
+      get clothing_item_path(item)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(item.kind)
+      expect(response.body).to include(item.memo)
+    end
+
+    it "他人の洋服の詳細にはアクセスできない" do
+      other_item = create(:clothing_item)
+      get clothing_item_path(other_item)
+      expect(response).to have_http_status(:not_found)
     end
 
     it "newページが表示できる" do

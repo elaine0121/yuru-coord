@@ -5,6 +5,10 @@ class ClothingItemsController < ApplicationController
     @clothing_items = current_user.clothing_items.includes(:category).order(:id)
   end
 
+  def show
+    @clothing_item = current_user.clothing_items.find(params[:id])
+  end
+
   def new
     @clothing_item = ClothingItem.new
     @categories = Category.order(:sort_order)
