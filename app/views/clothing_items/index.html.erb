@@ -12,6 +12,7 @@
         <th>種類</th>
         <th>色</th>
         <th>メモ</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -21,6 +22,7 @@
           <td><%= item.kind %></td>
           <td><%= item.color %></td>
           <td><%= item.memo %></td>
+          <td><%= link_to "詳細", clothing_item_path(item) %></td>
         </tr>
       <% end %>
     </tbody>
