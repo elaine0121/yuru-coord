@@ -37,6 +37,13 @@ RSpec.describe "ClothingItems", type: :request do
       expect(response.body).to include(item.category.name)
     end
 
+    it "ヘッダーに洋服一覧・登録・ログアウトのリンクが表示される" do
+      get clothing_items_path
+      expect(response.body).to include("マイ洋服一覧")
+      expect(response.body).to include("洋服を登録する")
+      expect(response.body).to include("ログアウト")
+    end
+
     it "詳細ページが表示できる" do
       item = create(:clothing_item, user: user)
       get clothing_item_path(item)
