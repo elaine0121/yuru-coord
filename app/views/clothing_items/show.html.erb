@@ -7,4 +7,5 @@
 <p><strong>登録日時：</strong><%= @clothing_item.created_at.strftime("%Y-%m-%d %H:%M") %></p>
 
 <%= link_to "編集する", edit_clothing_item_path(@clothing_item) %>
+<%= button_to "削除する", clothing_item_path(@clothing_item), method: :delete, data: { turbo_confirm: "本当に削除しますか？" } %>
 <%= link_to "一覧に戻る", clothing_items_path %>

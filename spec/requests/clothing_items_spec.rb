@@ -94,5 +94,17 @@ RSpec.describe "ClothingItems", type: :request do
       get edit_clothing_item_path(other_item)
       expect(response).to have_http_status(:not_found)
     end
+
+    it "洋服を削除すると一覧へリダイレクトされる" do
+      item = create(:clothing_item, user: user)
+      expect { delete clothing_item_path(item) }.to change(ClothingItem, :count).by(-1)
+      expect(response).to redirect_to(clothing_items_path)
+    end
+
+    it "他人の洋服は削除できない" do
+      other_item = create(:clothing_item)
+      delete clothing_item_path(other_item)
+      expect(response).to have_http_status(:not_found)
+    end
   end
 end
