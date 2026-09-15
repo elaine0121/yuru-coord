@@ -1,5 +1,16 @@
 <h1>マイ洋服一覧</h1>
 
+<% target_count = 5 %>
+<% if @clothing_items.size < target_count %>
+  <p style="padding: 8px 12px; background: #fff3cd; border-radius: 4px;">
+    あと<%= target_count - @clothing_items.size %>着登録すると提案の幅が広がります
+  </p>
+<% elsif @clothing_items.size == target_count %>
+  <p style="padding: 8px 12px; background: #d4edda; border-radius: 4px;">
+    目標の5着に達しました！提案の幅が広がりました！
+  </p>
+<% end %>
+
 <% if notice %>
   <p class="notice"><%= notice %></p>
 <% end %>

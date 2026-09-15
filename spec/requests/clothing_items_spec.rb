@@ -29,6 +29,30 @@ RSpec.describe "ClothingItems", type: :request do
   describe "ログイン中" do
     before { login_as(user) }
 
+    it "登録数0着のとき登録を促す案内が表示される" do
+      get clothing_items_path
+      expect(response.body).to include("あと5着登録すると提案の幅が広がります")
+    end
+
+    it "登録数3着のとき登録を促す案内が表示される" do
+      create_list(:clothing_item, 3, user: user)
+      get clothing_items_path
+      expect(response.body).to include("あと2着登録すると提案の幅が広がります")
+    end
+
+    it "登録数5着のとき目標達成の案内が表示される" do
+      create_list(:clothing_item, 5, user: user)
+      get clothing_items_path
+      expect(response.body).to include("目標の5着に達しました")
+    end
+
+    it "登録数6着以上のとき案内が表示されない" do
+      create_list(:clothing_item, 6, user: user)
+      get clothing_items_path
+      expect(response.body).not_to include("あと")
+      expect(response.body).not_to include("提案の幅")
+    end
+
     it "indexで登録した洋服の一覧が表示できる" do
       item = create(:clothing_item, user: user)
       get clothing_items_path
