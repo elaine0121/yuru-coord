@@ -41,6 +41,17 @@ class ClothingItemsController < ApplicationController
     end
   end
 
+  def destroy
+    @clothing_item = current_user.clothing_items.find(params[:id])
+
+    if @clothing_item.in_use?
+      redirect_to clothing_item_path(@clothing_item), alert: "この洋服はコーデで使用中のため削除できません。"
+    else
+      @clothing_item.destroy
+      redirect_to clothing_items_path, notice: "洋服を削除しました。"
+    end
+  end
+
   private
 
   def clothing_item_params

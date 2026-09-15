@@ -23,6 +23,7 @@
           <td><%= item.color %></td>
           <td><%= item.memo %></td>
           <td><%= link_to "詳細", clothing_item_path(item) %></td>
+          <td><%= button_to "削除", clothing_item_path(item), method: :delete, data: { turbo_confirm: "本当に削除しますか？" } %></td>
         </tr>
       <% end %>
     </tbody>
