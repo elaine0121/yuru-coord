@@ -22,4 +22,19 @@ RSpec.describe ClothingItem, type: :model do
       expect(item).to be_invalid
     end
   end
+
+  describe 'in_use?' do
+    it 'コーデに使用されていれば true を返す' do
+      clothing_item = create(:clothing_item)
+      create(:outfit_clothing_item, clothing_item: clothing_item)
+
+      expect(clothing_item.in_use?).to be true
+    end
+
+    it 'コーデに使用されていなければ false を返す' do
+      clothing_item = create(:clothing_item)
+
+      expect(clothing_item.in_use?).to be false
+    end
+  end
 end
