@@ -5,4 +5,5 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :clothing_items, dependent: :destroy
+  has_many :outfits, dependent: :destroy
 end
