@@ -45,4 +45,15 @@ RSpec.describe Outfit, type: :model do
       expect(other).to be_valid
     end
   end
+
+  describe '洋服との関連' do
+    it 'clothing_item_ids で洋服を関連付けられる' do
+      user = create(:user)
+      items = create_list(:clothing_item, 2, user: user)
+
+      outfit = create(:outfit, user: user, clothing_item_ids: items.map(&:id))
+
+      expect(outfit.clothing_items).to match_array(items)
+    end
+  end
 end

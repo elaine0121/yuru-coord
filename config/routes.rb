@@ -9,4 +9,6 @@ Rails.application.routes.draw do
   root "tops#index"
 
   resources :clothing_items, only: %i[index show new create edit update destroy]
+
+  resources :outfits, only: %i[new create]
 end
