@@ -3,6 +3,20 @@
 
 <% if user_signed_in? %>
   <p>こんにちは、<%= current_user.email %> さん</p>
+
+  <h2>今日のコーデ</h2>
+  <% if @today_outfit %>
+    <p><strong><%= @today_outfit.name.presence || "#{@today_outfit.scheduled_date.strftime('%m/%d')}のコーデ" %></strong></p>
+    <ul>
+      <% @today_outfit.clothing_items.each do |item| %>
+        <li><%= item.category.name %> / <%= item.kind %>（<%= item.color %>）</li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>今日のコーデはまだ設定されていません。</p>
+    <p><%= link_to "明日のコーデを登録する", new_outfit_path %></p>
+  <% end %>
+
   <p><%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete }, class: "btn btn-secondary" %></p>
 <% else %>
   <p><%= link_to "新規登録", new_user_registration_path, class: "btn btn-primary" %></p>
