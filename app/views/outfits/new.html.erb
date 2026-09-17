@@ -1,0 +1,38 @@
+<h1>コーデを保存</h1>
+
+<% if notice %>
+  <p class="notice"><%= notice %></p>
+<% end %>
+
+<%= form_with model: @outfit, local: true do |f| %>
+  <% if @outfit.errors.any? %>
+    <ul>
+      <% @outfit.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div>
+    <%= f.label :scheduled_date, "着る日（必須）" %>
+    <%= f.date_field :scheduled_date %>
+  </div>
+
+  <div>
+    <p>組み合わせる洋服を選んでください（複数選択可）</p>
+    <% if @clothing_items.empty? %>
+      <p>まだ洋服の登録がありません。先に <%= link_to "洋服を登録", new_clothing_item_path %> してください。</p>
+    <% else %>
+      <%= f.collection_check_boxes(:clothing_item_ids, @clothing_items, :id, ->(item) { "#{item.kind}（#{item.color}）" }) do |b| %>
+        <div>
+          <%= b.check_box %>
+          <%= b.label %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%= f.submit "保存する" %>
+<% end %>
+
+<%= link_to "トップへ戻る", root_path %>
