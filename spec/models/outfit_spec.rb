@@ -25,7 +25,7 @@ RSpec.describe Outfit, type: :model do
 
       duplicate = build(:outfit, user: user, scheduled_date: Date.new(2026, 10, 1))
       expect(duplicate).to be_invalid
-      expect(duplicate.errors[:scheduled_date]).to be_present
+      expect(duplicate.errors[:base]).to be_present
     end
 
     it '別ユーザーなら同じ日付でも登録できる' do
