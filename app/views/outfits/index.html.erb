@@ -1,0 +1,35 @@
+<h1>コーデ一覧</h1>
+
+<% if notice %>
+  <p class="notice"><%= notice %></p>
+<% end %>
+
+<% if @outfits.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>コーデ名</th>
+        <th>着る日</th>
+        <th>組み合わせ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @outfits.each do |outfit| %>
+        <tr>
+          <td><%= outfit.name.presence || "（名前なし）" %></td>
+          <td><%= outfit.scheduled_date %></td>
+          <td>
+            <% outfit.clothing_items.each do |item| %>
+              <%= item.category.name %> / <%= item.kind %>（<%= item.color %>）<br>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>まだコーデが登録されていません。</p>
+  <p><%= link_to "コーデを登録する", new_outfit_path %></p>
+<% end %>
+
+<%= link_to "トップへ戻る", root_path %>

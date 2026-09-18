@@ -46,6 +46,12 @@ RSpec.describe "Outfits", type: :request do
       expect(outfit.clothing_items).to match_array(items)
     end
 
+    it "コーデ名を指定して保存できる" do
+      post outfits_path, params: { outfit: { scheduled_date: Date.tomorrow, name: "通勤コーデ", clothing_item_ids: [] } }
+
+      expect(Outfit.last.name).to eq "通勤コーデ"
+    end
+
     it "他人の洋服を組み込もうとしても無視される" do
       my_item = create(:clothing_item, user: user)
       other_item = create(:clothing_item)
@@ -63,6 +69,23 @@ RSpec.describe "Outfits", type: :request do
 
       expect(response).to have_http_status(:unprocessable_entity)
       expect(response.body).to include("は1日1件までです")
+    end
+
+    it "一覧が表示され、コーデ名と洋服が見える" do
+      outfit = create(:outfit, user: user, scheduled_date: Date.yesterday, name: "週末コーデ")
+      category = create(:category)
+      item = create(:clothing_item, user: user, category: category, kind: "Tシャツ", color: "ホワイト")
+      create(:outfit_clothing_item, outfit: outfit, clothing_item: item)
+
+      get outfits_path
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("週末コーデ")
+      expect(response.body).to include(item.kind)
+    end
+
+    it "規約のないときは空の案内が表示される" do
+      get outfits_path
+      expect(response.body).to include("まだコーデが登録されていません")
     end
   end
 end

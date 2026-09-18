@@ -19,6 +19,11 @@
   </div>
 
   <div>
+    <%= f.label :name, "コーデ名（任意）" %>
+    <%= f.text_field :name, placeholder: "例：通勤コーデ" %>
+  </div>
+
+  <div>
     <p>組み合わせる洋服を選んでください（複数選択可）</p>
     <% if @clothing_items.empty? %>
       <p>まだ洋服の登録がありません。先に <%= link_to "洋服を登録", new_clothing_item_path %> してください。</p>
