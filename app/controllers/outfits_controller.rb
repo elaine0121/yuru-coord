@@ -1,6 +1,12 @@
 class OutfitsController < ApplicationController
   before_action :authenticate_user!
 
+  def index
+    @outfits = current_user.outfits
+                           .includes(clothing_items: :category)
+                           .order(scheduled_date: :desc)
+  end
+
   def new
     @outfit = current_user.outfits.build
     @outfit.scheduled_date = Date.tomorrow
@@ -26,7 +32,7 @@ class OutfitsController < ApplicationController
     own_ids = current_user.clothing_items.pluck(:id)
 
     params.require(:outfit)
-          .permit(:scheduled_date)
+          .permit(:scheduled_date, :name)
           .merge(clothing_item_ids: selected_ids & own_ids)
   end
 end
