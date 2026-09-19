@@ -11,6 +11,7 @@
         <th>コーデ名</th>
         <th>着る日</th>
         <th>組み合わせ</th>
+        <th>操作</th>
       </tr>
     </thead>
     <tbody>
@@ -23,6 +24,7 @@
               <%= item.category.name %> / <%= item.kind %>（<%= item.color %>）<br>
             <% end %>
           </td>
+          <td><%= link_to "再利用", reuse_outfit_path(outfit) %></td>
         </tr>
       <% end %>
     </tbody>
