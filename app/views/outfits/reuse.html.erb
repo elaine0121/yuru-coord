@@ -1,0 +1,33 @@
+<h1>コーデを再利用</h1>
+
+<% if @copy.errors.any? %>
+  <ul>
+    <% @copy.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<p><strong>元のコーデ</strong>：<%= @source.name.presence || "（名前なし）" %>（<%= @source.scheduled_date %>）</p>
+<p><strong>組み合わせ</strong>：</p>
+<ul>
+  <% @source.clothing_items.each do |item| %>
+    <li><%= item.category.name %> / <%= item.kind %>（<%= item.color %>）</li>
+  <% end %>
+</ul>
+
+<%= form_with model: @copy, url: reuse_outfit_path(@source), method: :post, local: true do |f| %>
+  <div>
+    <%= f.label :scheduled_date, "着る日（必須）" %>
+    <%= f.date_field :scheduled_date %>
+  </div>
+
+  <div>
+    <%= f.label :name, "コーデ名（任意）" %>
+    <%= f.text_field :name, placeholder: "例：通勤コーデ" %>
+  </div>
+
+  <%= f.submit "この組み合わせで再利用する" %>
+<% end %>
+
+<%= link_to "コーデ一覧へ戻る", outfits_path %>

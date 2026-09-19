@@ -24,6 +24,26 @@ class OutfitsController < ApplicationController
     end
   end
 
+  # 過去コーデの構成をコピーして新しい日付に再利用する
+  def reuse
+    @source = current_user.outfits.find(params[:id])
+    @copy = current_user.outfits.build
+    @copy.clothing_item_ids = @source.clothing_item_ids
+
+    if request.post?
+      @copy.assign_attributes(reuse_params)
+      if @copy.save
+        redirect_to outfits_path, notice: "コーデを再利用しました！"
+        return
+      end
+      render :reuse, status: :unprocessable_entity
+    else
+      @copy.scheduled_date = Date.tomorrow
+      @copy.name = @source.name
+      render :reuse
+    end
+  end
+
   private
 
   # 選んだ洋服は現在のユーザーが所有するものだけに絞って保存する
@@ -34,5 +54,10 @@ class OutfitsController < ApplicationController
     params.require(:outfit)
           .permit(:scheduled_date, :name)
           .merge(clothing_item_ids: selected_ids & own_ids)
+  end
+
+  # 再利用時は日付と名前だけ受け取り、洋服は元コーデの構成を引き継ぐ
+  def reuse_params
+    params.require(:outfit).permit(:scheduled_date, :name)
   end
 end

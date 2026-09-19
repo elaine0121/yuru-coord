@@ -10,5 +10,10 @@ Rails.application.routes.draw do
 
   resources :clothing_items, only: %i[index show new create edit update destroy]
 
-  resources :outfits, only: %i[index new create]
+  resources :outfits, only: %i[index new create] do
+    member do
+      get :reuse
+      post :reuse
+    end
+  end
 end

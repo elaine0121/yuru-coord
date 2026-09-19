@@ -87,5 +87,44 @@ RSpec.describe "Outfits", type: :request do
       get outfits_path
       expect(response.body).to include("まだコーデが登録されていません")
     end
+
+    describe "再利用" do
+      it "元コーデの構成が再利用画面に表示される" do
+        source = create(:outfit, user: user, scheduled_date: Date.yesterday, name: "通勤コーデ")
+        category = create(:category)
+        item = create(:clothing_item, user: user, category: category, kind: "Tシャツ", color: "ホワイト")
+        create(:outfit_clothing_item, outfit: source, clothing_item: item)
+
+        get reuse_outfit_path(source)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("通勤コーデ")
+        expect(response.body).to include(item.kind)
+      end
+
+      it "過去コーデの構成をコピーして新しい日付に保存できる" do
+        source = create(:outfit, user: user, scheduled_date: Date.yesterday)
+        items = create_list(:clothing_item, 2, user: user)
+        items.each { |item| create(:outfit_clothing_item, outfit: source, clothing_item: item) }
+        new_date = Date.new(2026, 10, 5)
+
+        post reuse_outfit_path(source, outfit: { scheduled_date: new_date })
+
+        expect(response).to redirect_to(outfits_path)
+        copy = Outfit.find_by(scheduled_date: new_date)
+        expect(copy).not_to be_nil
+        expect(copy.user).to eq user
+        expect(copy.clothing_items).to match_array(items)
+      end
+
+      it "既に使われている日付への再利用はエラーになる" do
+        source = create(:outfit, user: user, scheduled_date: Date.yesterday)
+        create(:outfit, user: user, scheduled_date: Date.tomorrow)
+
+        post reuse_outfit_path(source, outfit: { scheduled_date: Date.tomorrow })
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("1日1件までです")
+      end
+    end
   end
 end
