@@ -35,11 +35,14 @@ RSpec.describe "Outfits", type: :request do
       expect(response.body).to include(item.kind)
     end
 
-    it "明日の日付でコーデを保存できる" do
+    it "明日の日付でコーデを保存でき、一覧画面へ遷移して成功メッセージが表示される" do
       items = create_list(:clothing_item, 3, user: user)
       post outfits_path, params: { outfit: { scheduled_date: Date.tomorrow, clothing_item_ids: items.map(&:id) } }
 
-      expect(response).to redirect_to(root_path)
+      expect(response).to redirect_to(outfits_path)
+      expect(flash[:notice]).to eq "コーデを保存しました！"
+      get outfits_path
+      expect(response.body).to include("コーデを保存しました！")
       outfit = Outfit.last
       expect(outfit.user).to eq user
       expect(outfit.scheduled_date).to eq Date.tomorrow
