@@ -8,7 +8,7 @@
   </ul>
 <% end %>
 
-<p><strong>元のコーデ</strong>：<%= @source.name.presence || "（名前なし）" %>（<%= @source.scheduled_date %>）</p>
+<p><strong>元のコーデ</strong>：<%= @source.name.presence || "（名前なし）" %>（<%= @source.scheduled_date %>）・<%= @source.situation_text %></p>
 <p><strong>組み合わせ</strong>：</p>
 <ul>
   <% @source.clothing_items.each do |item| %>
@@ -25,6 +25,16 @@
   <div>
     <%= f.label :name, "コーデ名（任意）" %>
     <%= f.text_field :name, placeholder: "例：通勤コーデ" %>
+  </div>
+
+  <div>
+    <p>シチュエーション（任意）</p>
+    <% Outfit.situations.each_key do |key| %>
+      <label>
+        <%= f.radio_button :situation, key %>
+        <%= Outfit::SITUATION_LABELS[key.to_sym] %>
+      </label>
+    <% end %>
   </div>
 
   <%= f.submit "この組み合わせで再利用する" %>

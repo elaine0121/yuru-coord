@@ -31,6 +31,7 @@ class OutfitsController < ApplicationController
     @copy.clothing_item_ids = @source.clothing_item_ids
 
     if request.post?
+      @copy.situation = @source.situation
       @copy.assign_attributes(reuse_params)
       if @copy.save
         redirect_to outfits_path, notice: "コーデを再利用しました！"
@@ -40,6 +41,7 @@ class OutfitsController < ApplicationController
     else
       @copy.scheduled_date = Date.tomorrow
       @copy.name = @source.name
+      @copy.situation = @source.situation
       render :reuse
     end
   end
@@ -52,7 +54,7 @@ class OutfitsController < ApplicationController
     own_ids = current_user.clothing_items.pluck(:id)
 
     params.require(:outfit)
-          .permit(:scheduled_date, :name)
+          .permit(:scheduled_date, :name, :situation)
           .merge(clothing_item_ids: selected_ids & own_ids)
   end
 

@@ -6,6 +6,13 @@ class Outfit < ApplicationRecord
   validates :scheduled_date, presence: true
   validate :one_outfit_per_day
 
+  enum :situation, { commuter: 0, date: 1, casual: 2, formal: 3 }
+  SITUATION_LABELS = { commuter: "通勤", date: "デート", casual: "カジュアル", formal: "フォーマル" }.freeze
+
+  def situation_text
+    self.class::SITUATION_LABELS[situation.to_sym]
+  end
+
   private
 
   def one_outfit_per_day

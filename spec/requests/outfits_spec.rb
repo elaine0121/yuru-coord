@@ -52,6 +52,12 @@ RSpec.describe "Outfits", type: :request do
       expect(Outfit.last.name).to eq "通勤コーデ"
     end
 
+    it "シチュエーションを指定して保存できる" do
+      post outfits_path, params: { outfit: { scheduled_date: Date.tomorrow, situation: "date", clothing_item_ids: [] } }
+
+      expect(Outfit.last.situation).to eq "date"
+    end
+
     it "他人の洋服を組み込もうとしても無視される" do
       my_item = create(:clothing_item, user: user)
       other_item = create(:clothing_item)
@@ -72,7 +78,7 @@ RSpec.describe "Outfits", type: :request do
     end
 
     it "一覧が表示され、コーデ名と洋服が見える" do
-      outfit = create(:outfit, user: user, scheduled_date: Date.yesterday, name: "週末コーデ")
+      outfit = create(:outfit, user: user, scheduled_date: Date.yesterday, name: "週末コーデ", situation: "casual")
       category = create(:category)
       item = create(:clothing_item, user: user, category: category, kind: "Tシャツ", color: "ホワイト")
       create(:outfit_clothing_item, outfit: outfit, clothing_item: item)
@@ -81,6 +87,7 @@ RSpec.describe "Outfits", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("週末コーデ")
       expect(response.body).to include(item.kind)
+      expect(response.body).to include("カジュアル")
     end
 
     it "規約のないときは空の案内が表示される" do
@@ -102,7 +109,7 @@ RSpec.describe "Outfits", type: :request do
       end
 
       it "過去コーデの構成をコピーして新しい日付に保存できる" do
-        source = create(:outfit, user: user, scheduled_date: Date.yesterday)
+        source = create(:outfit, user: user, scheduled_date: Date.yesterday, situation: "date")
         items = create_list(:clothing_item, 2, user: user)
         items.each { |item| create(:outfit_clothing_item, outfit: source, clothing_item: item) }
         new_date = Date.new(2026, 10, 5)
@@ -114,6 +121,7 @@ RSpec.describe "Outfits", type: :request do
         expect(copy).not_to be_nil
         expect(copy.user).to eq user
         expect(copy.clothing_items).to match_array(items)
+        expect(copy.situation).to eq "date"
       end
 
       it "既に使われている日付への再利用はエラーになる" do
