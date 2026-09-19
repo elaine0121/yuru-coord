@@ -24,6 +24,16 @@
   </div>
 
   <div>
+    <p>シチュエーション（任意）</p>
+    <% Outfit.situations.each_key do |key| %>
+      <label>
+        <%= f.radio_button :situation, key %>
+        <%= Outfit::SITUATION_LABELS[key.to_sym] %>
+      </label>
+    <% end %>
+  </div>
+
+  <div>
     <p>組み合わせる洋服を選んでください（複数選択可）</p>
     <% if @clothing_items.empty? %>
       <p>まだ洋服の登録がありません。先に <%= link_to "洋服を登録", new_clothing_item_path %> してください。</p>
