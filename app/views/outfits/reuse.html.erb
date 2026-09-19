@@ -1,11 +1,13 @@
 <h1>コーデを再利用</h1>
 
 <% if @copy.errors.any? %>
-  <ul>
-    <% @copy.errors.full_messages.each do |msg| %>
-      <li><%= msg %></li>
-    <% end %>
-  </ul>
+  <div class="form-errors">
+    <ul>
+      <% @copy.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
 <% end %>
 
 <p><strong>元のコーデ</strong>：<%= @source.name.presence || "（名前なし）" %>（<%= @source.scheduled_date %>）・<%= @source.situation_text %></p>
