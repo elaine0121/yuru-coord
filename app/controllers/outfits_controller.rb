@@ -18,7 +18,7 @@ class OutfitsController < ApplicationController
     @clothing_items = current_user.clothing_items.order(:id)
 
     if @outfit.save
-      redirect_to root_path, notice: "コーデを保存しました！"
+      redirect_to outfits_path, notice: "コーデを保存しました！"
     else
       render :new, status: :unprocessable_entity
     end
