@@ -36,3 +36,5 @@
 # Ignore coverage reports (SimpleCov)
 /coverage
 /spec/examples.txt
+# Allow the .env.example template (but keep real .env ignored).
+!/.env.example
