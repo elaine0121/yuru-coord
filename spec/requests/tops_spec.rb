@@ -18,7 +18,11 @@ RSpec.describe "Tops", type: :request do
   end
 
   describe "ログイン中" do
-    before { login_as(user) }
+    before do
+      login_as(user)
+      # テストでは外部API（OpenWeatherMap）を呼ばず、天気取得をモックする
+      allow(WeatherService).to receive(:current).and_return(nil)
+    end
 
     it "今日のコーデが未設定のときは案内が表示される" do
       get root_path
@@ -46,6 +50,23 @@ RSpec.describe "Tops", type: :request do
 
       get root_path
       expect(response.body).to include("今日のコーデはまだ設定されていません")
+    end
+
+    it "天気が取得できるときは都市・天気・気温が表示される" do
+      allow(WeatherService).to receive(:current).and_return(
+        { temperature: 22.5, description: "晴れ", city: "Tokyo" }
+      )
+
+      get root_path
+      expect(response.body).to include("今日のお天気")
+      expect(response.body).to include("Tokyo")
+      expect(response.body).to include("晴れ")
+      expect(response.body).to include("23℃")
+    end
+
+    it "天気が取得できないときは代替表示がされる" do
+      get root_path
+      expect(response.body).to include("天気情報を取得できませんでした")
     end
   end
 end
