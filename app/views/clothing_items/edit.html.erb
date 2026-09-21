@@ -32,7 +32,7 @@
     <p>季節（この洋服が合う季節・通年可）</p>
     <% ClothingItem.suitable_seasons.each_key do |key| %>
       <label>
-        <%= f.radio_button :suitable_season, key, checked: @clothing_item.suitable_season == key %>
+        <%= f.radio_button :suitable_season, key, checked: @clothing_item.suitable_season == key.to_sym %>
         <%= ClothingItem::SUITABLE_SEASON_LABELS[key.to_sym] %>
       </label>
     <% end %>
