@@ -68,5 +68,34 @@ RSpec.describe "Tops", type: :request do
       get root_path
       expect(response.body).to include("天気情報を取得できませんでした")
     end
+
+    it "今日のコーデが未設定のとき、気温に合わせたおすすめコーデが表示される" do
+      allow(WeatherService).to receive(:current).and_return(
+        { temperature: 25.0, description: "晴れ", city: "Tokyo" }
+      )
+      tops = create(:category, name: "トップス")
+      bottoms = create(:category, name: "ボトムス")
+      create(:clothing_item, user: user, category: tops, kind: "半袖", color: "ホワイト", suitable_season: :summer)
+      create(:clothing_item, user: user, category: bottoms, kind: "パンツ", color: "ネイビー", suitable_season: :summer)
+
+      get root_path
+
+      expect(response.body).to include("今日のおすすめコーデ")
+      expect(response.body).to include("夏向け")
+      expect(response.body).to include("半袖")
+      expect(response.body).to include("パンツ")
+    end
+
+    it "季節に合う洋服がないときはおすすめを提案できない旨が表示される" do
+      allow(WeatherService).to receive(:current).and_return(
+        { temperature: 25.0, description: "晴れ", city: "Tokyo" }
+      )
+      tops = create(:category, name: "トップス")
+      create(:clothing_item, user: user, category: tops, kind: "ニット", color: "グレー", suitable_season: :winter)
+
+      get root_path
+
+      expect(response.body).to include("おすすめを提案できません")
+    end
   end
 end
