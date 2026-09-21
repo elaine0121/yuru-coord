@@ -3,6 +3,7 @@
 <p><strong>カテゴリ：</strong><%= @clothing_item.category.name %></p>
 <p><strong>種類：</strong><%= @clothing_item.kind %></p>
 <p><strong>色：</strong><%= @clothing_item.color.presence || "未設定" %></p>
+<p><strong>季節：</strong><%= @clothing_item.suitable_season ? ClothingItem::SUITABLE_SEASON_LABELS[@clothing_item.suitable_season.to_sym] : "未設定" %></p>
 <p><strong>メモ：</strong><%= @clothing_item.memo.presence || "未設定" %></p>
 <p><strong>登録日時：</strong><%= @clothing_item.created_at.strftime("%Y-%m-%d %H:%M") %></p>
 
