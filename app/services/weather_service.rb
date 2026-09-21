@@ -8,14 +8,21 @@ class WeatherService
   # @return [Hash, nil] { temperature:, description:, city: } 取得失敗時は nil
   def self.current(city: "Tokyo")
     api_key = ENV["OPENWEATHER_API_KEY"]
-    return nil if api_key.blank?
+    if api_key.blank?
+      Rails.logger.error("WeatherService: OPENWEATHER_API_KEY is blank")
+      return nil
+    end
 
     uri = build_uri(city, api_key)
     response = Net::HTTP.get_response(uri)
-    return nil unless response.is_a?(Net::HTTPSuccess)
+    unless response.is_a?(Net::HTTPSuccess)
+      Rails.logger.error("WeatherService: bad status #{response.code}")
+      return nil
+    end
 
     parse(response.body)
-  rescue StandardError
+  rescue StandardError => e
+    Rails.logger.error("WeatherService error: #{e.class}: #{e.message}")
     nil
   end
 
