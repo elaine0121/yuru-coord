@@ -1,3 +1,6 @@
+require "net/http"
+require "json"
+
 # OpenWeatherMap から現在の天気情報を取得するサービス
 # 取得に失敗した場合は nil を返し、呼び出し側で代替表示する
 class WeatherService
