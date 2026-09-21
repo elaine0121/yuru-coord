@@ -19,9 +19,20 @@
         <li><%= item.category.name %> / <%= item.kind %>（<%= item.color %>）</li>
       <% end %>
     </ul>
+  <% elsif @suggestion.present? %>
+    <h3>今日のおすすめコーデ</h3>
+    <p><%= @suggestion[:season_label] %>向け（気温 <%= @suggestion[:temperature].round %>℃）</p>
+    <ul>
+      <% @suggestion[:items].each do |item| %>
+        <li><%= item.category.name %> / <%= item.kind %>（<%= item.color %>）</li>
+      <% end %>
+    </ul>
+    <p><%= link_to "この組み合わせで明日のコーデを登録する", new_outfit_path %></p>
   <% else %>
     <p>今日のコーデはまだ設定されていません。</p>
+    <p>気温に合う洋服の季節設定がないため、おすすめを提案できません。</p>
     <p><%= link_to "明日のコーデを登録する", new_outfit_path %></p>
+    <p><%= link_to "洋服の季節を設定する", clothing_items_path %></p>
   <% end %>
 
   <p><%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete }, class: "btn btn-secondary" %></p>

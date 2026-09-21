@@ -55,6 +55,6 @@ class ClothingItemsController < ApplicationController
   private
 
   def clothing_item_params
-    params.require(:clothing_item).permit(:category_id, :kind, :color, :memo)
+    params.require(:clothing_item).permit(:category_id, :kind, :color, :memo, :suitable_season)
   end
 end
