@@ -97,5 +97,25 @@ RSpec.describe "Tops", type: :request do
 
       expect(response.body).to include("おすすめを提案できません")
     end
+
+    it "シチュエーションを指定すると絞り込んだ提案が表示される" do
+      allow(WeatherService).to receive(:current).and_return(
+        { temperature: 25.0, description: "晴れ", city: "Tokyo" }
+      )
+      tops_c = create(:category, name: "トップス")
+      bottoms_c = create(:category, name: "ボトムス")
+      dress_c = create(:category, name: "ワンピース")
+      top = create(:clothing_item, user: user, category: tops_c, kind: "半袖", color: "ホワイト", suitable_season: :summer)
+      create(:clothing_item, user: user, category: bottoms_c, kind: "パンツ", color: "グレー", suitable_season: :summer)
+      dress = create(:clothing_item, user: user, category: dress_c, kind: "ワンピース", color: "ネイビー", suitable_season: :summer)
+
+      get root_path, params: { situation: "commuter" }
+
+      expect(response.body).to include("今日のおすすめコーデ")
+      expect(response.body).to include(top.kind)
+      expect(response.body).to include("パンツ")
+      expect(response.body).not_to include(dress.kind)
+      expect(response.body).to include("別のコーデを見る")
+    end
   end
 end
