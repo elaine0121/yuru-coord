@@ -22,11 +22,22 @@
   <% elsif @suggestion.present? %>
     <h3>今日のおすすめコーデ</h3>
     <p><%= @suggestion[:season_label] %>向け（気温 <%= @suggestion[:temperature].round %>℃）</p>
+    <p>
+      シチュエーション：
+      <% Outfit::SITUATION_LABELS.each do |key, label| %>
+        <% if @selected_situation == key %>
+          <strong><%= label %></strong>
+        <% else %>
+          <%= link_to label, root_path(situation: key, attempt: 0) %>
+        <% end %>
+      <% end %>
+    </p>
     <ul>
       <% @suggestion[:items].each do |item| %>
         <li><%= item.category.name %> / <%= item.kind %>（<%= item.color %>）</li>
       <% end %>
     </ul>
+    <p><%= link_to "別のコーデを見る", root_path(situation: @selected_situation, attempt: params[:attempt].to_i + 1) %></p>
     <p><%= link_to "この組み合わせで明日のコーデを登録する", new_outfit_path %></p>
   <% else %>
     <p>今日のコーデはまだ設定されていません。</p>

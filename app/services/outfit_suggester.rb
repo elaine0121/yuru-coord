@@ -1,4 +1,4 @@
-# 気温・季節に合わせたコーデ1着分を提案する
+# 気温・季節・シチュエーションに合わせたコーデ1着分を提案する
 # season 判定は日本基準の気温から推測する
 class OutfitSuggester
   TOP_NAME       = "トップス"
@@ -8,6 +8,9 @@ class OutfitSuggester
   WINTER_TEMP    = 12.0
   MID_TEMP       = 20.0
   OUTER_ADD_TEMP = 15.0
+
+  # ワンピースを優先するシチュエーション（フォーマル・デート）
+  DRESS_FIRST_SITUATION = [:formal, :date].freeze
 
   # season ごとに適合する suitable_season の enum 値（通年=4 は常に含む）
   SEASON_CODES = {
@@ -22,16 +25,18 @@ class OutfitSuggester
     winter: "冬"
   }.freeze
 
-  def self.suggest(user:, temperature:)
-    new(user: user, temperature: temperature).suggest
+  def self.suggest(user:, temperature:, situation: nil, offset: 0)
+    new(user: user, temperature: temperature, situation: situation, offset: offset).suggest
   end
 
-  def initialize(user:, temperature:)
+  def initialize(user:, temperature:, situation: nil, offset: 0)
     @user = user
     @temperature = temperature&.to_f
+    @situation = situation&.to_sym
+    @offset = offset
   end
 
-  # 戻り値: { season:, season_label:, temperature:, items: [ClothingItem, ...] } または nil
+  # 戻り値: { season:, season_label:, temperature:, situation:, items: [ClothingItem, ...] } または nil
   def suggest
     return nil if @temperature.nil?
 
@@ -45,6 +50,7 @@ class OutfitSuggester
       season: season,
       season_label: SEASON_LABELS[season],
       temperature: @temperature,
+      situation: @situation,
       items: outfit
     }
   end
@@ -59,6 +65,13 @@ class OutfitSuggester
     :summer
   end
 
+  # 候補から offset 番目の洋服を取る（範囲外は先頭に循環）
+  def pick(pool)
+    return if pool.empty?
+
+    pool[@offset % pool.size]
+  end
+
   # 判定した季節に合う（通年を含む）洋服を DB 層で絞り込む
   def matching_items(season)
     @user.clothing_items
@@ -68,22 +81,33 @@ class OutfitSuggester
          .includes(:category)
   end
 
-  # ワンピース優先、なければトップス+ボトムス、寒いときはアウター追加
+  # 通勤・カジュアルはトップス+ボトムス、フォーマル・デート・未指定はワンピース優先
+  # オフセット（再抽選）で候補の別の組み合わせを選ぶ
   def build_outfit(pool, temp)
-    tops    = pool.select { |i| i.category&.name == TOP_NAME }
-    bottoms = pool.select { |i| i.category&.name == BOTTOM_NAME }
-    outers  = pool.select { |i| i.category&.name == OUTER_NAME }
-    dresses = pool.select { |i| i.category&.name == DRESS_NAME }
+    tops    = pool.select { |i| i.category&.name == TOP_NAME }.sort_by(&:id)
+    bottoms = pool.select { |i| i.category&.name == BOTTOM_NAME }.sort_by(&:id)
+    outers  = pool.select { |i| i.category&.name == OUTER_NAME }.sort_by(&:id)
+    dresses = pool.select { |i| i.category&.name == DRESS_NAME }.sort_by(&:id)
 
-    result = []
-    if dresses.any?
-      result << dresses.first
+    result = if dress_first? && dresses.any?
+               [pick(dresses)]
+    elsif tops.any? && bottoms.any?
+               [pick(tops), pick(bottoms)]
+    elsif dresses.any?
+               [pick(dresses)]
+    elsif tops.any?
+               [pick(tops)]
+    elsif bottoms.any?
+               [pick(bottoms)]
     else
-      result << tops.first if tops.any?
-      result << bottoms.first if bottoms.any?
+               []
     end
-    result << outers.first if outers.any? && temp < OUTER_ADD_TEMP
 
+    result << pick(outers) if outers.any? && temp < OUTER_ADD_TEMP
     result.compact
+  end
+
+  def dress_first?
+    @situation.nil? || DRESS_FIRST_SITUATION.include?(@situation)
   end
 end

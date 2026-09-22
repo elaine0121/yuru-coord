@@ -109,5 +109,52 @@ RSpec.describe OutfitSuggester, type: :service do
         expect(OutfitSuggester.suggest(user: user, temperature: 25)).to be_nil
       end
     end
+
+    context "シチュエーション絞り込み" do
+      it "通勤時はワンピースがあってもトップス+ボトムスを優先する" do
+        item(category: dresses, kind: "ワンピース", season: "summer")
+        top = item(category: tops, kind: "半袖", season: "summer")
+        bottom = item(category: bottoms, kind: "パンツ", season: "summer")
+
+        result = OutfitSuggester.suggest(user: user, temperature: 25, situation: :commuter)
+
+        expect(result[:items]).to match_array([top, bottom])
+      end
+
+      it "フォーマル時はワンピースを優先する" do
+        dress = item(category: dresses, kind: "ワンピース", season: "summer")
+        item(category: tops, kind: "半袖", season: "summer")
+        item(category: bottoms, kind: "パンツ", season: "summer")
+
+        result = OutfitSuggester.suggest(user: user, temperature: 25, situation: :formal)
+
+        expect(result[:items]).to contain_exactly dress
+      end
+
+      it "デート時はワンピースを優先する" do
+        dress = item(category: dresses, kind: "ワンピース", season: "summer")
+        item(category: tops, kind: "半袖", season: "summer")
+        item(category: bottoms, kind: "パンツ", season: "summer")
+
+        result = OutfitSuggester.suggest(user: user, temperature: 25, situation: :date)
+
+        expect(result[:items]).to contain_exactly dress
+      end
+    end
+
+    context "再抽選（offset）" do
+      it "オフセットを変えると別のトップスが選ばれる" do
+        top1 = item(category: tops, kind: "半袖A", season: "summer")
+        top2 = item(category: tops, kind: "半袖B", season: "summer")
+        bottom = item(category: bottoms, kind: "パンツ", season: "summer")
+
+        first = OutfitSuggester.suggest(user: user, temperature: 25, situation: :commuter, offset: 0)
+        second = OutfitSuggester.suggest(user: user, temperature: 25, situation: :commuter, offset: 1)
+
+        expect(first[:items]).to include top1, bottom
+        expect(second[:items]).not_to include top1
+        expect(second[:items]).to include top2
+      end
+    end
   end
 end

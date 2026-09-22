@@ -9,10 +9,14 @@ class TopsController < ApplicationController
                                .find_by(scheduled_date: Date.today)
     @weather = WeatherService.current(city: WEATHER_CITY)
 
-    # 今日のコーデが未設定でも、気温・季節に合わせたおすすめを常に用意しておく
+    # シチュエーションと再抽選(attempt)をクエリから受け取って、おすすめを算出する
+    @selected_situation = params[:situation].presence&.to_sym
+    attempt = params[:attempt].to_i
     @suggestion = OutfitSuggester.suggest(
       user: current_user,
-      temperature: @weather&.dig(:temperature)
+      temperature: @weather&.dig(:temperature),
+      situation: @selected_situation,
+      offset: attempt
     )
   end
 end
