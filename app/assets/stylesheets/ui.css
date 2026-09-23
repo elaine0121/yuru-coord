@@ -1,0 +1,73 @@
+/* ====== 一覧テーブルの統一スタイル（マイ洋服一覧 / コーデ一覧） ====== */
+table {
+  width: 100%;
+  max-width: 900px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #e0d8c8;
+}
+
+thead th {
+  background-color: #f7f3ea;
+  color: #4a3f2a;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #faf8f2;
+}
+
+tbody tr:hover {
+  background-color: #f3ecdb;
+}
+
+/* 組み合わせ列などリスト表示の整列 */
+td ul,
+td p {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+td ul li {
+  margin: 2px 0;
+}
+
+/* 操作列は折り返さない */
+thead th:last-child,
+tbody td:last-child {
+  white-space: nowrap;
+}
+
+/* ====== ボタン ====== */
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background-color: #6b5b3e;
+  color: #fff;
+}
+
+.btn-secondary {
+  color: #6b5b3e;
+  border: 1px solid #6b5b3e;
+}
+
+/* ====== フォーム補足 ====== */
+.field-help {
+  color: #8a7a5a;
+  font-size: 13px;
+  margin: 4px 0 0;
+}

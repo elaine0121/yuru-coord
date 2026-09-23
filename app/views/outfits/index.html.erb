@@ -22,9 +22,11 @@
           <td><%= outfit.scheduled_date %></td>
           <td><%= outfit.situation_text %></td>
           <td>
-            <% outfit.clothing_items.each do |item| %>
-              <%= item.category.name %> / <%= item.kind %>（<%= item.color %>）<br>
-            <% end %>
+            <ul>
+              <% outfit.clothing_items.each do |item| %>
+                <li><%= item.category.name %> / <%= item.kind %>（<%= item.color %>）</li>
+              <% end %>
+            </ul>
           </td>
           <td><%= link_to "再利用", reuse_outfit_path(outfit) %></td>
         </tr>
