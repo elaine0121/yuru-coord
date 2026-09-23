@@ -10,6 +10,16 @@ class OutfitsController < ApplicationController
   def new
     @outfit = current_user.outfits.build
     @outfit.scheduled_date = Date.tomorrow
+
+    # トップの「この組み合わせで明日のコーデを登録する」から来たら、組み合わせを事前に引き継ぐ
+    if params[:situation].present? && Outfit.situations.key?(params[:situation].to_sym)
+      @outfit.situation = params[:situation].to_sym
+    end
+    if params[:clothing_item_ids].present?
+      own_ids = current_user.clothing_items.pluck(:id)
+      @outfit.clothing_item_ids = Array(params[:clothing_item_ids]).map(&:to_i) & own_ids
+    end
+
     @clothing_items = current_user.clothing_items.order(:id)
   end
 
