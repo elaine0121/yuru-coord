@@ -156,5 +156,47 @@ RSpec.describe OutfitSuggester, type: :service do
         expect(second[:items]).to include top2
       end
     end
+
+    context "直近3日に着た洋服の除外" do
+      it "直近3日に着た洋服を候補から除外する" do
+        recent_top = item(category: tops, kind: "昨日のTシャツ", season: "summer")
+        fresh_top  = item(category: tops, kind: "新しい半袖", season: "summer")
+        bottom     = item(category: bottoms, kind: "パンツ", season: "summer")
+
+        # 昨日に recent_top を使ったコーデを保存（直近3日に該当）
+        outfit = create(:outfit, user: user, scheduled_date: Date.yesterday)
+        create(:outfit_clothing_item, outfit: outfit, clothing_item: recent_top)
+
+        result = OutfitSuggester.suggest(user: user, temperature: 25, situation: :commuter)
+
+        expect(result[:items].map(&:id)).not_to include recent_top.id
+        expect(result[:items]).to include fresh_top
+      end
+
+      it "4日以上前に着た洋服は除外されない" do
+        old_top = item(category: tops, kind: "古いTシャツ", season: "summer")
+        bottom  = item(category: bottoms, kind: "パンツ", season: "summer")
+
+        outfit = create(:outfit, user: user, scheduled_date: Date.today - 4)
+        create(:outfit_clothing_item, outfit: outfit, clothing_item: old_top)
+
+        result = OutfitSuggester.suggest(user: user, temperature: 25, situation: :commuter)
+
+        expect(result[:items]).to include old_top
+      end
+
+      it "除外すると候補が足りない場合は全候補にフォールバックして提案する" do
+        worn_top    = item(category: tops, kind: "昨日の半袖", season: "summer")
+        worn_bottom = item(category: bottoms, kind: "昨日のパンツ", season: "summer")
+
+        outfit = create(:outfit, user: user, scheduled_date: Date.yesterday)
+        create(:outfit_clothing_item, outfit: outfit, clothing_item: worn_top)
+        create(:outfit_clothing_item, outfit: outfit, clothing_item: worn_bottom)
+
+        result = OutfitSuggester.suggest(user: user, temperature: 25, situation: :commuter)
+
+        expect(result[:items].map(&:id)).to include worn_top.id, worn_bottom.id
+      end
+    end
   end
 end

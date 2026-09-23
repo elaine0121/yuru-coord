@@ -12,6 +12,9 @@ class OutfitSuggester
   # ワンピースを優先するシチュエーション（フォーマル・デート）
   DRESS_FIRST_SITUATION = [:formal, :date].freeze
 
+  # 直近3日間に着た洋服を除外するための日数（今日を含む過去3日分＝今日の2日前まで）
+  RECENT_WORN_DAYS = 2
+
   # season ごとに適合する suitable_season の enum 値（通年=4 は常に含む）
   SEASON_CODES = {
     winter: [3, 4],
@@ -44,6 +47,12 @@ class OutfitSuggester
     pool = matching_items(season)
     outfit = build_outfit(pool, @temperature)
 
+    # 直近3日除外の結果候補が足りず組めない場合は、全候補にフォールバックして必ず提案できるようにする
+    if outfit.empty?
+      pool = all_matching_items(season)
+      outfit = build_outfit(pool, @temperature)
+    end
+
     return nil if outfit.empty?
 
     {
@@ -72,13 +81,30 @@ class OutfitSuggester
     pool[@offset % pool.size]
   end
 
-  # 判定した季節に合う（通年を含む）洋服を DB 層で絞り込む
-  def matching_items(season)
+  # 判定した季節に合う（通年を含む）洋服を DB 層で絞り込む（直近3日の除外なしの全候補）
+  def all_matching_items(season)
     @user.clothing_items
          .joins(:category)
          .where(suitable_season: SEASON_CODES.fetch(season))
          .where(categories: { name: [TOP_NAME, BOTTOM_NAME, OUTER_NAME, DRESS_NAME] })
          .includes(:category)
+  end
+
+  # 直近3日間に着た洋服を除外した候補（通常の提案はこちらを使う）
+  def matching_items(season)
+    ids = recently_worn_item_ids
+    return all_matching_items(season) if ids.empty?
+
+    all_matching_items(season).where.not(id: ids)
+  end
+
+  # 直近3日（今日を含む過去3日分）の scheduled_date を持つコーデで使われた洋服 ID
+  def recently_worn_item_ids
+    @user.outfits
+         .where(scheduled_date: (Date.today - RECENT_WORN_DAYS)..Date.today)
+         .joins(:outfit_clothing_items)
+         .pluck(:'outfit_clothing_items.clothing_item_id')
+         .uniq
   end
 
   # 通勤・カジュアルはトップス+ボトムス、フォーマル・デート・未指定はワンピース優先
