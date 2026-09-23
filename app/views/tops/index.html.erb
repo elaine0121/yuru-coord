@@ -38,7 +38,8 @@
       <% end %>
     </ul>
     <p><%= link_to "別のコーデを見る", root_path(situation: @selected_situation, attempt: params[:attempt].to_i + 1) %></p>
-    <p><%= link_to "この組み合わせで明日のコーデを登録する", new_outfit_path %></p>
+    <p><%= link_to "この組み合わせで明日のコーデを登録する",
+            new_outfit_path(situation: @selected_situation, clothing_item_ids: @suggestion[:items].map(&:id)) %></p>
   <% else %>
     <p>今日のコーデはまだ設定されていません。</p>
     <p>気温に合う洋服の季節設定がないため、おすすめを提案できません。</p>
