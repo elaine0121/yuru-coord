@@ -4,7 +4,8 @@
   <p class="notice"><%= notice %></p>
 <% end %>
 
-<%= form_with model: @clothing_item, local: true do |f| %>
+<%= form_with model: @clothing_item, local: true,
+              html: { data: { controller: "kind-selector", kind_options: @kinds_by_category.to_json } } do |f| %>
   <% if @clothing_item.errors.any? %>
     <ul>
       <% @clothing_item.errors.full_messages.each do |msg| %>
@@ -15,12 +16,22 @@
 
   <div>
     <%= f.label :category_id, "カテゴリ（必須）" %>
-    <%= f.collection_select :category_id, @categories, :id, :name, prompt: "選択してください" %>
+    <%= f.collection_select :category_id, @categories, :id, :name,
+                            { prompt: "選択してください" },
+                            { data: { kind_selector_target: "category", action: "change->kind-selector#categoryChanged" } } %>
   </div>
 
+  <%
+    current_kinds = @kinds_by_category[@clothing_item.category_id] || []
+    existing_kind = @clothing_item.kind
+    if existing_kind.present? && !current_kinds.include?(existing_kind)
+      current_kinds = [existing_kind] + current_kinds
+    end
+  %>
   <div>
     <%= f.label :kind, "種類（必須）" %>
-    <%= f.text_field :kind, placeholder: "例: Tシャツ" %>
+    <%= f.select :kind, current_kinds.map { |k| [k, k] }, { selected: existing_kind }, { data: { kind_selector_target: "kind" } } %>
+    <p class="field-help">選んだカテゴリに応じて選択肢が表示されます。選択肢にない種類は、近い種類を選びメモ欄に詳細を記載してください。</p>
   </div>
 
   <div>
@@ -32,7 +43,7 @@
     <p>季節（この洋服が合う季節・通年可）</p>
     <% ClothingItem.suitable_seasons.each_key do |key| %>
       <label>
-        <%= f.radio_button :suitable_season, key, checked: @clothing_item.suitable_season == key.to_sym %>
+        <%= f.radio_button :suitable_season, key, checked: @clothing_item.suitable_season == key %>
         <%= ClothingItem::SUITABLE_SEASON_LABELS[key.to_sym] %>
       </label>
     <% end %>
