@@ -24,7 +24,7 @@
         <th>色</th>
         <th>季節</th>
         <th>メモ</th>
-        <th></th>
+        <th>操作</th>
       </tr>
     </thead>
     <tbody>
@@ -35,8 +35,10 @@
           <td><%= item.color %></td>
           <td><%= item.suitable_season ? ClothingItem::SUITABLE_SEASON_LABELS[item.suitable_season.to_sym] : "未設定" %></td>
           <td><%= item.memo %></td>
-          <td><%= link_to "詳細", clothing_item_path(item) %></td>
-          <td><%= button_to "削除", clothing_item_path(item), method: :delete, data: { turbo_confirm: "本当に削除しますか？" } %></td>
+          <td>
+            <%= link_to "詳細", clothing_item_path(item) %>
+            <%= button_to "削除", clothing_item_path(item), method: :delete, data: { turbo_confirm: "本当に削除しますか？" } %>
+          </td>
         </tr>
       <% end %>
     </tbody>
