@@ -5,6 +5,10 @@
   <p>こんにちは、<%= current_user.email %> さん</p>
 
   <h2>今日のお天気</h2>
+  <%= form_with url: root_path, method: :get, class: "weather-city-form" do |f| %>
+    <%= f.select :city, TopsController::WEATHER_CITIES, { selected: @selected_city } %>
+    <%= f.submit "地域を変更" %>
+  <% end %>
   <% if @weather %>
     <p><strong><%= @weather[:city] %></strong>：<%= @weather[:description] %> / <%= @weather[:temperature].round %>℃</p>
   <% else %>

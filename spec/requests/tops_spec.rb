@@ -117,5 +117,27 @@ RSpec.describe "Tops", type: :request do
       expect(response.body).not_to include(dress.kind)
       expect(response.body).to include("別のコーデを見る")
     end
+
+    it "city を指定するとその都市で天気を取得して表示する" do
+      allow(WeatherService).to receive(:current).and_return(
+        { temperature: 18.0, description: "曇り", city: "Osaka" }
+      )
+
+      get root_path, params: { city: "Osaka" }
+
+      expect(WeatherService).to have_received(:current).with(city: "Osaka")
+      expect(response.body).to include("今日のお天気")
+      expect(response.body).to include("Osaka")
+    end
+
+    it "未対応の city を指定した場合はデフォルトの東京で取得する" do
+      allow(WeatherService).to receive(:current).and_return(
+        { temperature: 22.0, description: "晴れ", city: "Tokyo" }
+      )
+
+      get root_path, params: { city: "Narnia" }
+
+      expect(WeatherService).to have_received(:current).with(city: "Tokyo")
+    end
   end
 end

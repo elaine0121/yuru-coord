@@ -1,5 +1,6 @@
 class TopsController < ApplicationController
-  WEATHER_CITY = "Tokyo"
+  DEFAULT_CITY = "Tokyo"
+  WEATHER_CITIES = %w[Tokyo Osaka Sapporo Fukuoka Sendai Nagoya Kobe Kyoto Hiroshima].freeze
 
   def index
     return unless user_signed_in?
@@ -7,7 +8,8 @@ class TopsController < ApplicationController
     @today_outfit = current_user.outfits
                                .includes(clothing_items: :category)
                                .find_by(scheduled_date: Date.today)
-    @weather = WeatherService.current(city: WEATHER_CITY)
+    @selected_city = WEATHER_CITIES.include?(params[:city]) ? params[:city] : DEFAULT_CITY
+    @weather = WeatherService.current(city: @selected_city)
 
     # シチュエーションと再抽選(attempt)をクエリから受け取って、おすすめを算出する
     @selected_situation = params[:situation].presence&.to_sym
