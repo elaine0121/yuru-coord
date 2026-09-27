@@ -56,4 +56,13 @@ RSpec.describe Outfit, type: :model do
       expect(outfit.clothing_items).to match_array(items)
     end
   end
+
+  describe 'situation_text' do
+    it '状況ごとにラベルを返す' do
+      expect(build(:outfit, situation: :commuter).situation_text).to eq '通勤'
+      expect(build(:outfit, situation: :date).situation_text).to eq 'デート'
+      expect(build(:outfit, situation: :casual).situation_text).to eq 'カジュアル'
+      expect(build(:outfit, situation: :formal).situation_text).to eq 'フォーマル'
+    end
+  end
 end
