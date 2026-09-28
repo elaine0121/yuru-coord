@@ -1,11 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'ユーザー登録・ログインのシステムテスト', type: :system do
-  include Warden::Test::Helpers
-
-  before { Warden.test_mode! }
-  after { Warden.test_reset! }
-
   describe 'ユーザー登録' do
     it 'メールアドレスとパスワードを入力するとアカウントが作成され、自動ログインしてトップページに遷移する' do
       visit new_user_registration_path
@@ -53,9 +48,13 @@ RSpec.describe 'ユーザー登録・ログインのシステムテスト', type
     let!(:user) { create(:user) }
 
     it 'ログアウトするとトップページに戻り、未ログイン状態になる' do
-      login_as user
-      visit root_path
-      expect(page).to have_content "こんにちは、#{user.email} さん"
+      visit new_user_session_path
+
+      fill_in 'user[email]', with: user.email
+      fill_in 'user[password]', with: user.password
+      click_button 'ログイン'
+
+      expect(page).to have_current_path(root_path)
 
       click_link 'ログアウト', match: :first
 
