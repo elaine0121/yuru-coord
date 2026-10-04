@@ -28,7 +28,11 @@
               <% end %>
             </ul>
           </td>
-          <td><%= link_to "再利用", reuse_outfit_path(outfit) %></td>
+          <td>
+            <%= link_to "再利用", reuse_outfit_path(outfit) %>
+            <%= button_to "削除", outfit_path(outfit), method: :delete,
+                data: { turbo_confirm: "このコーデを削除しますか？" } %>
+          </td>
         </tr>
       <% end %>
     </tbody>
