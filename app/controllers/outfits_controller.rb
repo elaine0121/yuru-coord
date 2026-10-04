@@ -34,6 +34,13 @@ class OutfitsController < ApplicationController
     end
   end
 
+  # 登録済みコーデを削除する（誤登録時の救済。中間テーブルは dependent: :destroy で自動削除）
+  def destroy
+    @outfit = current_user.outfits.find(params[:id])
+    @outfit.destroy
+    redirect_to outfits_path, notice: "コーデを削除しました！", status: :see_other
+  end
+
   # 過去コーデの構成をコピーして新しい日付に再利用する
   def reuse
     @source = current_user.outfits.find(params[:id])

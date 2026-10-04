@@ -18,6 +18,14 @@ RSpec.describe "Outfits", type: :request do
       post outfits_path, params: { outfit: { scheduled_date: Date.tomorrow } }
       expect(response).to redirect_to(new_user_session_path)
     end
+
+    it "削除するとログイン画面へリダイレクトされる" do
+      outfit = create(:outfit, user: user, scheduled_date: Date.tomorrow)
+
+      delete outfit_path(outfit)
+
+      expect(response).to redirect_to(new_user_session_path)
+    end
   end
 
   describe "ログイン中" do
@@ -135,6 +143,31 @@ RSpec.describe "Outfits", type: :request do
 
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to include("1日1件までです")
+      end
+    end
+
+    describe "削除" do
+      it "自分のコーデを削除できる（中間テーブルも一緒に消える）" do
+        item = create(:clothing_item, user: user)
+        outfit = create(:outfit, user: user, scheduled_date: Date.tomorrow)
+        create(:outfit_clothing_item, outfit: outfit, clothing_item: item)
+
+        expect { delete outfit_path(outfit) }.to change(Outfit, :count).by(-1)
+          .and change(OutfitClothingItem, :count).by(-1)
+
+        expect(response).to redirect_to(outfits_path)
+        expect(flash[:notice]).to eq "コーデを削除しました！"
+        # 洋服そのものは消えない
+        expect(ClothingItem.find_by(id: item.id)).not_to be_nil
+      end
+
+      it "他人のコーデは削除できない（404になる）" do
+        other = create(:user)
+        outfit = create(:outfit, user: other, scheduled_date: Date.tomorrow)
+
+        expect { delete outfit_path(outfit) }.not_to change(Outfit, :count)
+
+        expect(response).to have_http_status(:not_found)
       end
     end
   end
