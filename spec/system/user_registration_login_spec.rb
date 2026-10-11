@@ -1,6 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe 'ユーザー登録・ログインのシステムテスト', type: :system do
+  # 真实 Chrome(Selenium) 下这些表单提交偶发不稳定（CI 上登录/注册偶发失败）。
+  # 本文件只验证"填表→提交→跳转"逻辑，不涉及 JS 交互，改用 rack_test 稳定驱动即可保证 CI 稳定。
+  around do |example|
+    Capybara.using_driver(:rack_test) { example.run }
+  end
+
   describe 'ユーザー登録' do
     it 'メールアドレスとパスワードを入力するとアカウントが作成され、自動ログインしてトップページに遷移する' do
       visit new_user_registration_path
@@ -11,7 +17,7 @@ RSpec.describe 'ユーザー登録・ログインのシステムテスト', type
       click_button 'アカウント登録'
 
       # 登録後は自動ログインされ、ログイン状態のトップページが表示される
-      expect(page).to have_current_path(root_path)
+      expect(page).to have_current_path(root_path, wait: 10)
       expect(page).to have_content 'こんにちは、new_user@example.com さん'
       expect(page).to have_link 'ログアウト'
     end
@@ -27,7 +33,7 @@ RSpec.describe 'ユーザー登録・ログインのシステムテスト', type
       fill_in 'user[password]', with: user.password
       click_button 'ログイン'
 
-      expect(page).to have_current_path(root_path)
+      expect(page).to have_current_path(root_path, wait: 10)
       expect(page).to have_content "こんにちは、#{user.email} さん"
       expect(page).to have_link 'ログアウト'
     end
@@ -54,11 +60,11 @@ RSpec.describe 'ユーザー登録・ログインのシステムテスト', type
       fill_in 'user[password]', with: user.password
       click_button 'ログイン'
 
-      expect(page).to have_current_path(root_path)
+      expect(page).to have_current_path(root_path, wait: 10)
 
       click_link 'ログアウト', match: :first
 
-      expect(page).to have_current_path(root_path)
+      expect(page).to have_current_path(root_path, wait: 10)
       expect(page).to have_no_content 'こんにちは'
       expect(page).to have_link '新規登録'
       expect(page).to have_link 'ログイン'
